@@ -55,9 +55,27 @@ def WalletInfo(string):
     response = response.json()
     return jsonify(response)
 
-api.route('/wallet/info/<string>/address')
+@api.route('/wallet/info/<string>/address')
 def WalletAddress(string):
     url = f"http://localhost:8090/v2/wallets/{string}/addresses"
     response = requests.get(url)
     response = response.json()
     return jsonify(response)
+
+@api.route('/wallet/create/address', methods=['POST'])
+def CreateAddress():
+    if request.method == 'POST':
+        data = request.get_json()
+        wallet_id = data['wallet_id']
+        passphrase = 'Secure Passphrase'
+        address_type = 'Bech32'
+        headers = {'Content-type': 'application/json'}
+        payload = {
+                "passphrase": passphrase,
+                "derivation_path": 20,
+                "address_type": address_type,
+                }        
+        url = f'http://localhost:8090/v2/wallets/{wallet_id}/addresses'
+        response = requests.post(url, json = payload, headers = headers)
+        response = response.json()
+        return jsonify(response)
